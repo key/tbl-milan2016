@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/slider.css" />
+<script type="text/javascript" src="jquery-1.12.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap-slider.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // TODO retrieve current value
+    var currentValue = 0;
+    var slider = $('.slider');
+    var sliderValue = $('.sliderValue');
+    slider.slider({
+        min: 0,
+        max: 7,
+        step: 1,
+        value: currentValue,
+        tooltip: false
+    });
+    sliderValue.html(currentValue);
+
+    slider.bind('slide', function(e) {
+        var val = e.value;
+        if (currentValue != val) {
+            currentValue = val;
+            // TODO send http request to rpi
+            sliderValue.html(val);
+        }
+    });
+});
+</script>
+
+</head>
+<body>
+
+    <div class="content">
+        <div class="slider" style="width: 70%"></div>
+    </div>    
+    <div class="content">
+        <div class="sliderValue">
+    </div>
+    <div class="content">
+        <button>Demo</button>
+    </div>      
+</body>
+</html>
