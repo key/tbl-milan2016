@@ -12,6 +12,6 @@
 
 - name: requirementsをインストール
   pip:
-    requirements: ~/app/requirements.txt
+    requirements: ~/app/app/requirements.txt
     virtualenv: ~/venvs/app/
   sudo: false

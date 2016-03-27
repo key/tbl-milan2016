@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "homepage": "https://github.com/key/tbl-milan2016",
+  "authors": [
+    "Mitsukuni Sato <mitsukuni.sato@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "autobahnjs": "autobahn#^0.9.9"
+  }
+}

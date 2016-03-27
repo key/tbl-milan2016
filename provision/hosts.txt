@@ -1,2 +1,5 @@
-[main]
+[rectangle]
+raspberrypi.local
+
+[square]
 raspberrypi.local

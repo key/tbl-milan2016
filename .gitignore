@@ -1,0 +1,6 @@
+.python-version
+.node-version
+
+*.retry
+
+frontend/bower_components
