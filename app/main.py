@@ -8,13 +8,13 @@ import RPi.GPIO as GPIO
 
 control_frequency = 1000
 
-pwm = 18
-grp1 = 8
-grp2 = 7
-grp3 = 23
-grp4 = 25
+pwm = 12
+grp1 = 24
+grp2 = 26
+grp3 = 16
+grp4 = 22
 
-brightness0 = 0
+brightness0 = 1
 brightness1 = 400
 brightness2 = 700
 brightness3 = 1023
@@ -23,19 +23,22 @@ led_all = [grp1, grp2, grp3, grp4]
 
 
 def init():
-  GPIO.cleanup([pwm] + led_all)
+  GPIO.setmode(GPIO.BOARD)
 
   # pwm
+  GPIO.setup(pwm, GPIO.OUT)
+  GPIO.output(pwm, True)
   GPIO.PWM(pwm, brightness0)
 
   # led out
   for grp in led_all:
+    sleep(0.25)
     GPIO.setup(grp, GPIO.OUT)
     GPIO.output(grp, True)
 
   # 全灯(1s)
   wait = 1.0 / (brightness3 - brightness0)
-  for brightness in range(0, 1024):
+  for brightness in range(1, 1024):
     GPIO.PWM(pwm, brightness)
     sleep(wait)
 
@@ -49,9 +52,9 @@ def init():
 def main() :
   init()
 
-  while True:
-    sleep(1.0 / target_brightness)
 
-
-if __name__ = '__main__':
-  main()
+if __name__ == '__main__':
+  try:
+    main()
+  except KeyboardInterrupt:
+    GPIO.cleanup()
