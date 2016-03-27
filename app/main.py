@@ -48,6 +48,9 @@ def init():
   for b in range(100, -1, -1):
     p.ChangeDutyCycle(b)
     sleep(0.01)
+
+  sleep(0.2)
+
   for b in range(0, 101):
     p.ChangeDutyCycle(b)
     sleep(0.01)
@@ -58,6 +61,29 @@ def init():
     GPIO.output(grp, False)
     sleep(0.25)
   GPIO.output(pwm, False)
+
+  grp1_p = GPIO.PWM(grp1, brightness3)
+  grp2_p = GPIO.PWM(grp2, brightness3)
+  grp3_p = GPIO.PWM(grp3, brightness3)
+  grp4_p = GPIO.PWM(grp4, brightness3)
+  grp1_p.start(0)
+  grp2_p.start(0)
+  grp3_p.start(0)
+  grp4_p.start(0)
+
+  for b in range(0, 101):
+    grp1_p.ChangeDutyCycle(b)
+    grp2_p.ChangeDutyCycle(b)
+    grp3_p.ChangeDutyCycle(b)
+    grp4_p.ChangeDutyCycle(b)
+    sleep(0.03)
+
+  for b in range(100, -1, -1):
+    grp1_p.ChangeDutyCycle(b)
+    grp2_p.ChangeDutyCycle(b)
+    grp3_p.ChangeDutyCycle(b)
+    grp4_p.ChangeDutyCycle(b)
+    sleep(0.03)
 
   print 'initialize done'
 
