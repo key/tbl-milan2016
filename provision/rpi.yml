@@ -1,0 +1,8 @@
+- hosts: main
+  remote_user: pi
+  gather_facts: no
+  roles:
+    - { role: python, sudo: true, ask_pass: true }
+    - { role: app }
+  vars:
+    hostname: raspberrypi.local

@@ -1,0 +1,6 @@
+- name: 必須パッケージインストール
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-virtualenv
