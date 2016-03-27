@@ -36,13 +36,13 @@ def init():
     GPIO.setup(grp, GPIO.OUT)
     GPIO.output(grp, True)
 
-  # $BA4Et(B(1s)
+  # 全灯(1s)
   wait = 1.0 / (brightness3 - brightness0)
   for brightness in range(1, 1024):
     GPIO.PWM(pwm, brightness)
     sleep(wait)
 
-  # $B%0%k!<%W(B4$B$+$i(B1$B$^$G=g$K>CEt(B(250ms/group)
+  # グループ4から1まで順に消灯(250ms/group)
   wait = 1.0 / 250
   for grp in [grp4, grp3, grp2, grp1]:
     GPIO.output(grp, False)
