@@ -108,11 +108,11 @@ def onleaved(*args):
 
 @app.subscribe('cc.triplebottomline.led.state')
 def on_state_changed(val):
-    global state
-    state = val
-    print 'currentState: %d' % state
-    print('Received an event with something: %d' % val)
-    # TODO 値のバリデーション
+    if 0 <= val <= 1:
+        global state
+        state = val
+        print 'currentState: %d' % state
+        print('Received an event with something: %d' % val)
 
 
 @app.subscribe('cc.triplebottomline.led.value')
