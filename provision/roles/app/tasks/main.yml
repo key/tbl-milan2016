@@ -4,9 +4,10 @@
     dest: /home/pi/app
     version: master
     accept_hostkey: yes
-  sudo: false
+  become: false
 
 - name: requirementsをインストール
   pip:
     requirements: /home/pi/app/app/requirements.txt
-  sudo: true
+  become: true
+  become_method: sudo
