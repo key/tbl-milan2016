@@ -16,3 +16,10 @@
   template:
     src: templates/index.html
     dest: /home/pi/app/frontend/html/index.html
+
+- name: systemdサービスの登録
+  copy:
+    src: files/crossbar.service
+    dest: /etc/systemd/system/crossbar.service
+  become: true
+  become_method: sudo

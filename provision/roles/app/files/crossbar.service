@@ -1,0 +1,11 @@
+[Unit]
+Description = Crossbar.io
+
+[Service]
+ExecStart=/home/pi/app/scripts/crossbar.sh
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+
