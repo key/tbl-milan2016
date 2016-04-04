@@ -3,7 +3,7 @@
 For RaspberryPi model A
 """
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from time import sleep as psleep
 
 from autobahn.twisted.wamp import Application
@@ -140,7 +140,7 @@ def get_state():
 
 if __name__ == '__main__':
     try:
-        # init()
+        init()
         app.run(u'ws://127.0.0.1:8080/ws', u'realm1')
 
     except KeyboardInterrupt:
