@@ -127,7 +127,7 @@ def onjoined(*args):
 
     while True:
         if state == STATE_DEMO:
-            print 'start demo mode'
+            print 'demo mode'
             # グループ1からグループ4まで点灯
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                 for d in range(0, 101):
@@ -158,8 +158,6 @@ def on_state_changed(val):
     if 0 <= val <= 1:
         global state
         state = val
-        print 'currentState: %d' % state
-        print('Received an event with something: %d' % val)
 
 
 @app.subscribe('cc.triplebottomline.led.value')
@@ -168,21 +166,17 @@ def on_value_changed(val):
         global value, state
         value = val
         state = STATE_NORMAL
-        print 'currentValue: %d' % value
-        print('Received an event with something: %d' % val)
 
 
 @app.register(u'cc.triplebottomline.led.getValue')
 def get_value():
     global value
-    print 'currentValue: %d' % value
     return value
 
 
 @app.register(u'cc.triplebottomline.led.getState')
 def get_state():
     global state
-    print 'currentState: %d' % state
     return state
 
 
