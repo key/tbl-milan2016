@@ -41,7 +41,7 @@
                     "paths": {
                         "/": {
                             "type": "static",
-                            "directory": ".."
+                            "directory": "../frontend/html/"
                         },
                         "ws": {
                             "type": "websocket"
