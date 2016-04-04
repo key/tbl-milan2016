@@ -125,15 +125,15 @@ def onjoined(*args):
     p.start(100)
     GPIO.output(PWM, True)
 
-    if state == STATE_DEMO:
-        print 'start demo mode'
-	while True:
+    while True:
+        if state == STATE_DEMO:
+            print 'start demo mode'
             # グループ1からグループ4まで点灯
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                 for d in range(0, 101):
                     grp_p.ChangeDutyCycle(d)
                     yield sleep(0.03)
-	    sleep(2)
+            sleep(2)
 
             for d in range(100, -1, -1):
                 for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
@@ -141,9 +141,10 @@ def onjoined(*args):
                     yield sleep(0.005)
             yield sleep(2)
 
-    else:
-        # TODO normal loop
-        pass
+        elif state == STATE_NORMAL:
+            for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
+                grp_p.ChangeDutyCycle(value)
+            yield sleep(0.001)
 
 
 @app.signal('onleaved')
@@ -164,8 +165,9 @@ def on_state_changed(val):
 @app.subscribe('cc.triplebottomline.led.value')
 def on_value_changed(val):
     if 0 <= val <= 100:
-        global value
+        global value, state
         value = val
+        state = STATE_NORMAL
         print 'currentValue: %d' % value
         print('Received an event with something: %d' % val)
 
@@ -180,7 +182,7 @@ def get_value():
 @app.register(u'cc.triplebottomline.led.getState')
 def get_state():
     global state
-    print 'currentState: %d' % value
+    print 'currentState: %d' % state
     return state
 
 

@@ -47,6 +47,8 @@
                         });
                         session.subscribe('cc.triplebottomline.led.value', function (args) {
                             console.log("Event:", args[0]);
+                            slider.nstSlider('set_position', args[0]);
+                            currentValue = args[0];
                         });
 
                         session.call('cc.triplebottomline.led.getValue', []).then(
