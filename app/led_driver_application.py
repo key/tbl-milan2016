@@ -3,18 +3,21 @@
 For RaspberryPi model A
 """
 
-import RPi.GPIO as GPIO
 from time import sleep as psleep
 
 from autobahn.twisted.wamp import Application
 from autobahn.twisted.util import sleep
+import wiringpi
+import RPi.GPIO as GPIO
 
 
-GRP1 = 24
-GRP2 = 26
-GRP3 = 16
-GRP4 = 22
-PWM = 12
+# RPi board pin header number
+GPIO_GROUP1 = 24
+GPIO_GROUP2 = 26
+GPIO_GROUP3 = 16
+GPIO_GROUP4 = 22
+GPIO_PWM = 12
+
 PWM_FREQUENCY = 80
 
 STATE_NORMAL = 0
@@ -23,17 +26,17 @@ STATE_DEMO = 1
 value = 0
 state = STATE_DEMO
 transition = False
-led_all = [GRP1, GRP2, GRP3, GRP4]
+led_all = [GPIO_GROUP1, GPIO_GROUP2, GPIO_GROUP3, GPIO_GROUP4]
 
 
 def init():
     print 'init'
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(PWM, GPIO.OUT)
-    p = GPIO.PWM(PWM, PWM_FREQUENCY)
+    GPIO.setup(GPIO_PWM, GPIO.OUT)
+    p = GPIO.PWM(GPIO_PWM, PWM_FREQUENCY)
     p.start(100)
-    GPIO.output(PWM, True)
+    GPIO.output(GPIO_PWM, True)
 
     # グループ1からグループ4まで点灯
     for grp in led_all:
@@ -60,16 +63,16 @@ def init():
         psleep(0.01)
 
     # グループ4から1まで消灯
-    for grp in [GRP4, GRP3, GRP2, GRP1]:
+    for grp in [GPIO_GROUP4, GPIO_GROUP3, GPIO_GROUP2, GPIO_GROUP1]:
         print 'pin %d off' % grp
         GPIO.output(grp, False)
         psleep(0.25)
-    GPIO.output(PWM, False)
+    GPIO.output(GPIO_PWM, False)
 
-    grp1_p = GPIO.PWM(GRP1, PWM_FREQUENCY)
-    grp2_p = GPIO.PWM(GRP2, PWM_FREQUENCY)
-    grp3_p = GPIO.PWM(GRP3, PWM_FREQUENCY)
-    grp4_p = GPIO.PWM(GRP4, PWM_FREQUENCY)
+    grp1_p = GPIO.PWM(GPIO_GROUP1, PWM_FREQUENCY)
+    grp2_p = GPIO.PWM(GPIO_GROUP2, PWM_FREQUENCY)
+    grp3_p = GPIO.PWM(GPIO_GROUP3, PWM_FREQUENCY)
+    grp4_p = GPIO.PWM(GPIO_GROUP4, PWM_FREQUENCY)
     grp1_p.start(0)
     grp2_p.start(0)
     grp3_p.start(0)
@@ -101,33 +104,35 @@ def onjoined(*args):
 
     global state
 
+    # setup hardware pwm using wiringpi
+    wiringpi.wiringPiSetupPhys()
+    wiringpi.pinMode(12, 2)
+    wiringpi.pwmWrite(12, 1024)
+
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(GRP1, GPIO.OUT)
-    GPIO.setup(GRP2, GPIO.OUT)
-    GPIO.setup(GRP3, GPIO.OUT)
-    GPIO.setup(GRP4, GPIO.OUT)
-    grp1_p = GPIO.PWM(GRP1, PWM_FREQUENCY)
-    grp2_p = GPIO.PWM(GRP2, PWM_FREQUENCY)
-    grp3_p = GPIO.PWM(GRP3, PWM_FREQUENCY)
-    grp4_p = GPIO.PWM(GRP4, PWM_FREQUENCY)
+    GPIO.setup(GPIO_GROUP1, GPIO.OUT)
+    GPIO.setup(GPIO_GROUP2, GPIO.OUT)
+    GPIO.setup(GPIO_GROUP3, GPIO.OUT)
+    GPIO.setup(GPIO_GROUP4, GPIO.OUT)
+    grp1_p = GPIO.PWM(GPIO_GROUP1, PWM_FREQUENCY)
+    grp2_p = GPIO.PWM(GPIO_GROUP2, PWM_FREQUENCY)
+    grp3_p = GPIO.PWM(GPIO_GROUP3, PWM_FREQUENCY)
+    grp4_p = GPIO.PWM(GPIO_GROUP4, PWM_FREQUENCY)
     grp1_p.start(0)
     grp2_p.start(0)
     grp3_p.start(0)
     grp4_p.start(0)
-    GPIO.output(GRP1, True)
-    GPIO.output(GRP2, True)
-    GPIO.output(GRP3, True)
-    GPIO.output(GRP4, True)
-    GPIO.setup(PWM, GPIO.OUT)
-
-    p = GPIO.PWM(PWM, PWM_FREQUENCY)
-    p.start(100)
-    GPIO.output(PWM, True)
+    GPIO.output(GPIO_GROUP1, True)
+    GPIO.output(GPIO_GROUP2, True)
+    GPIO.output(GPIO_GROUP3, True)
+    GPIO.output(GPIO_GROUP4, True)
 
     while True:
         if state == STATE_DEMO:
             print 'demo mode'
+            wiringpi.pwmWrite(12, 1024)
+
             # グループ1からグループ4まで点灯
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                 for d in range(0, 101):
@@ -140,19 +145,22 @@ def onjoined(*args):
             sleep(2)
 
             for d in range(100, -1, -1):
-                for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
-                    grp_p.ChangeDutyCycle(d)
-                    yield sleep(0.005)
-                    if state != STATE_DEMO:
-                        break
+                v = int((1024 / 100.0) * d)
+                wiringpi.pwmWrite(12, d)
+                yield sleep(0.005)
+
                 if state != STATE_DEMO:
                     break
+            for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
+                grp_p.ChangeDutyCycle(0)
+
             yield sleep(2)
 
         elif state == STATE_NORMAL:
-            p.ChangeDutyCycle(value)
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                 grp_p.ChangeDutyCycle(100)
+            v = int((1024 / 100.0) * value)
+            wiringpi.pwmWrite(12, v)
             if state != STATE_NORMAL:
                 break
             yield sleep(0.001)
