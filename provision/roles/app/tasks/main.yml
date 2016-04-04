@@ -1,7 +1,3 @@
-- name: virtualenvを作成
-  command: creates=~/venvs/ virtualenv -p python2.7 ~/venvs/app/
-  sudo: false
-
 - name: gitクローン
   git:
     repo: https://github.com/key/tbl-milan2016.git
@@ -12,6 +8,5 @@
 
 - name: requirementsをインストール
   pip:
-    requirements: ~/app/app/requirements.txt
-    virtualenv: ~/venvs/app/
-  sudo: false
+    requirements: /home/pi/app/app/requirements.txt
+  sudo: true

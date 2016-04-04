@@ -1,49 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title></title>
-<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="css/slider.css" />
-<script type="text/javascript" src="jquery-1.12.1.min.js"></script>
-<script type="text/javascript" src="js/bootstrap-slider.js"></script>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery.nstSlider.min.css"/>
+    <script type="text/javascript" src="jquery-1.12.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.nstSlider.min.js"></script>
+    <script type="text/javascript" src="js/autobahn.min.js"></script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-    // TODO retrieve current value
-    var currentValue = 0;
-    var slider = $('.slider');
-    var sliderValue = $('.sliderValue');
-    slider.slider({
-        min: 0,
-        max: 7,
-        step: 1,
-        value: currentValue,
-        tooltip: false
-    });
-    sliderValue.html(currentValue);
+    <script type="text/javascript">
+        $(document).ready(function () {
+                    var currentValue;
+                    var connection;
+                    var slider;
 
-    slider.bind('slide', function(e) {
-        var val = e.value;
-        if (currentValue != val) {
-            currentValue = val;
-            // TODO send http request to rpi
-            sliderValue.html(val);
-        }
-    });
-});
-</script>
+                    currentValue = 0;
+                    slider = $('.nstSlider');
+
+                    connection = new autobahn.Connection({
+                        url: 'ws://127.0.0.1:8080/ws',
+                        realm: 'realm1'
+                    });
+
+                    connection.onopen = function (session) {
+                        // topic
+                        // - cc.triplebottomline.led.state (動作モード)
+                        // - cc.triplebottomline.led.value (現在の設定値)
+
+                        slider.nstSlider({
+                            "left_grip_selector": ".leftGrip",
+                            "value_changed_callback": function (cause, minValue, maxValue, prevMinValue, prevMaxValue) {
+                                currentValue = minValue;
+                                console.log("value is " + currentValue);
+
+                                session.publish('cc.triplebottomline.led.value', [currentValue]);
+                            }
+                        });
+
+                        function onStateChanged(args) {
+                            console.log("Event:", args[0]);
+                        }
+
+                        function onValueChanged(args) {
+                            console.log("Event:", args[0]);
+                        }
+
+                        session.subscribe('cc.triplebottomline.led.state', onStateChanged);
+                        session.subscribe('cc.triplebottomline.led.value', onValueChanged);
+
+                        session.call('cc.triplebottomline.led.getValue', []).then(
+                                function (res) {
+                                    console.log("Result:", res);
+                                }
+                        );
+                        session.call('cc.triplebottomline.led.getState', []).then(
+                                function (res) {
+                                    console.log("Result:", res);
+                                }
+                        );
+
+                        // TODO retrieve current value
+                        // TODO set current value to slider
+                    };
+
+                    connection.open();
+                }
+        );
+    </script>
 
 </head>
 <body>
 
-    <div class="content">
-        <div class="slider" style="width: 70%"></div>
-    </div>    
-    <div class="content">
-        <div class="sliderValue">
+<div class="content">
+    <div class="nstSlider"
+         data-range_min="0" data-range_max="100"
+         data-cur_min="0" data-cur_max="100">
+        <div class="highlightPanel"></div>
+        <div class="bar"></div>
+        <div class="leftGrip"></div>
+    </div>
+
+    <div class="leftLabel"></div>
+    <div class="rightLabel"></div>
+</div>
+<div class="content">
+    <div class="sliderValue">
     </div>
     <div class="content">
         <button>Demo</button>
-    </div>      
+    </div>
 </body>
 </html>

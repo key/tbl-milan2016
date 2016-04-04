@@ -1,6 +1,9 @@
 .python-version
 .node-version
-
+.idea
+*.pid
 *.retry
+
+.crossbar/*.key
 
 frontend/bower_components
