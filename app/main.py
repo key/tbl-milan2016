@@ -6,7 +6,7 @@ For RaspberryPi model A
 from time import sleep
 import RPi.GPIO as GPIO
 
-control_frequency = 100
+control_frequency = 80
 
 pwm = 12
 grp1 = 24
