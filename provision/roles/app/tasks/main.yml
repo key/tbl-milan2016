@@ -11,3 +11,8 @@
     requirements: /home/pi/app/app/requirements.txt
   become: true
   become_method: sudo
+
+- name: htmlを生成
+  template:
+    src: templates/index.html
+    dest: /home/pi/app/frontend/html/index.html

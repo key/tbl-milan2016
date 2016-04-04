@@ -6,4 +6,6 @@
     - { role: app }
   vars:
     hostname: raspberrypi.local
+    port: 8080
+    group_count: 4
     LC_ALL: C

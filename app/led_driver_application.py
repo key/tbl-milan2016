@@ -105,8 +105,8 @@ def onjoined(*args):
 
 @app.signal('onleaved')
 def onleaved(*args):
-    # TODO stop led driver
     print 'realm leaved'
+    GPIO.cleanup()
 
 
 @app.subscribe('cc.triplebottomline.led.state')

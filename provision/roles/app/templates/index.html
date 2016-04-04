@@ -17,9 +17,8 @@
 
                     slider = $('.nstSlider');
 
-                    // TODO 接続先名を変更できるように
                     connection = new autobahn.Connection({
-                        url: 'ws://127.0.0.1:8080/ws',
+                        url: 'ws://{{ hostname }}:{{ port }}/ws',
                         realm: 'realm1'
                     });
 
