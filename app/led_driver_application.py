@@ -99,8 +99,6 @@ def onjoined(*args):
     # TODO start led driver
     print 'realm joined'
 
-    yield 'hoge'
-
 
 @app.signal('onleaved')
 def onleaved(*args):
@@ -110,21 +108,33 @@ def onleaved(*args):
 
 @app.subscribe('cc.triplebottomline.led.state')
 def on_state_changed(val):
+    global state
+    state = val
+    print 'currentState: %d' % state
     print('Received an event with something: %d' % val)
+    # TODO 値のバリデーション
 
 
 @app.subscribe('cc.triplebottomline.led.value')
 def on_value_changed(val):
-    print('Received an event with something: %d' % val)
+    if 0 <= val <= 100:
+        global value
+        value = val
+        print 'currentValue: %d' % value
+        print('Received an event with something: %d' % val)
 
 
 @app.register(u'cc.triplebottomline.led.getValue')
 def get_value():
+    global value
+    print 'currentValue: %d' % value
     return value
 
 
 @app.register(u'cc.triplebottomline.led.getState')
 def get_state():
+    global state
+    print 'currentState: %d' % value
     return state
 
 

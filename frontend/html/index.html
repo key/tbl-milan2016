@@ -11,14 +11,16 @@
     <script type="text/javascript">
         $(document).ready(function () {
                     var currentValue;
+                    var currentState;
                     var connection;
                     var slider;
 
-                    currentValue = 0;
                     slider = $('.nstSlider');
 
+                    // TODO 接続先名を変更できるように
                     connection = new autobahn.Connection({
-                        url: 'ws://127.0.0.1:8080/ws',
+//                        url: 'ws://127.0.0.1:8080/ws',
+                        url: 'ws://raspberrypi.local:8080/ws',
                         realm: 'realm1'
                     });
 
@@ -30,6 +32,9 @@
                         slider.nstSlider({
                             "left_grip_selector": ".leftGrip",
                             "value_changed_callback": function (cause, minValue, maxValue, prevMinValue, prevMaxValue) {
+                                if (currentValue === undefined) {
+                                    return;
+                                }
                                 currentValue = minValue;
                                 console.log("value is " + currentValue);
 
@@ -37,30 +42,27 @@
                             }
                         });
 
-                        function onStateChanged(args) {
+                        session.subscribe('cc.triplebottomline.led.state', function (args) {
                             console.log("Event:", args[0]);
-                        }
-
-                        function onValueChanged(args) {
+                        });
+                        session.subscribe('cc.triplebottomline.led.value', function (args) {
                             console.log("Event:", args[0]);
-                        }
-
-                        session.subscribe('cc.triplebottomline.led.state', onStateChanged);
-                        session.subscribe('cc.triplebottomline.led.value', onValueChanged);
+                        });
 
                         session.call('cc.triplebottomline.led.getValue', []).then(
                                 function (res) {
+                                    // TODO set current value to slider
                                     console.log("Result:", res);
+                                    slider.nstSlider('set_position', res);
+                                    currentValue = res;
                                 }
                         );
                         session.call('cc.triplebottomline.led.getState', []).then(
                                 function (res) {
                                     console.log("Result:", res);
+                                    currentState = res;
                                 }
                         );
-
-                        // TODO retrieve current value
-                        // TODO set current value to slider
                     };
 
                     connection.open();
