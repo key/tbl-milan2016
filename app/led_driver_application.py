@@ -150,8 +150,9 @@ def onjoined(*args):
             yield sleep(2)
 
         elif state == STATE_NORMAL:
+            p.ChangeDutyCycle(value)
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
-                grp_p.ChangeDutyCycle(value)
+                grp_p.ChangeDutyCycle(100)
             if state != STATE_NORMAL:
                 break
             yield sleep(0.001)
