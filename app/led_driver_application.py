@@ -133,17 +133,27 @@ def onjoined(*args):
                 for d in range(0, 101):
                     grp_p.ChangeDutyCycle(d)
                     yield sleep(0.03)
+                    if state != STATE_DEMO:
+                        break
+                if state != STATE_DEMO:
+                    break
             sleep(2)
 
             for d in range(100, -1, -1):
                 for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                     grp_p.ChangeDutyCycle(d)
                     yield sleep(0.005)
+                    if state != STATE_DEMO:
+                        break
+                if state != STATE_DEMO:
+                    break
             yield sleep(2)
 
         elif state == STATE_NORMAL:
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
                 grp_p.ChangeDutyCycle(value)
+            if state != STATE_NORMAL:
+                break
             yield sleep(0.001)
 
 
