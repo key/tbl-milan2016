@@ -1,4 +1,4 @@
-- hosts: main
+- hosts: rectangle
   remote_user: pi
   gather_facts: no
   roles:

@@ -6,18 +6,13 @@ For RaspberryPi model A
 from time import sleep
 import RPi.GPIO as GPIO
 
-control_frequency = 1000
+control_frequency = 100
 
 pwm = 12
 grp1 = 24
 grp2 = 26
 grp3 = 16
 grp4 = 22
-
-brightness0 = 0.5
-brightness1 = 400
-brightness2 = 700
-brightness3 = 1023
 
 led_all = [grp1, grp2, grp3, grp4]
 
@@ -27,7 +22,7 @@ def init():
   GPIO.setwarnings(False)
   GPIO.setmode(GPIO.BOARD)
   GPIO.setup(pwm, GPIO.OUT)
-  p = GPIO.PWM(pwm, brightness3)
+  p = GPIO.PWM(pwm, control_frequency)
   p.start(100)
   GPIO.output(pwm, True)
 
@@ -62,10 +57,10 @@ def init():
     sleep(0.25)
   GPIO.output(pwm, False)
 
-  grp1_p = GPIO.PWM(grp1, brightness3)
-  grp2_p = GPIO.PWM(grp2, brightness3)
-  grp3_p = GPIO.PWM(grp3, brightness3)
-  grp4_p = GPIO.PWM(grp4, brightness3)
+  grp1_p = GPIO.PWM(grp1, control_frequency)
+  grp2_p = GPIO.PWM(grp2, control_frequency)
+  grp3_p = GPIO.PWM(grp3, control_frequency)
+  grp4_p = GPIO.PWM(grp4, control_frequency)
   grp1_p.start(0)
   grp2_p.start(0)
   grp3_p.start(0)
