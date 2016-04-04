@@ -127,18 +127,19 @@ def onjoined(*args):
 
     if state == STATE_DEMO:
         print 'start demo mode'
-        # グループ1からグループ4まで点灯
-        for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
-            for d in range(0, 101):
-                grp_p.ChangeDutyCycle(d)
-                yield sleep(0.03)
-	sleep(2)
-
-        for d in range(100, -1, -1):
+	while True:
+            # グループ1からグループ4まで点灯
             for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
-                grp_p.ChangeDutyCycle(d)
-                yield sleep(0.005)
-        yield
+                for d in range(0, 101):
+                    grp_p.ChangeDutyCycle(d)
+                    yield sleep(0.03)
+	    sleep(2)
+
+            for d in range(100, -1, -1):
+                for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
+                    grp_p.ChangeDutyCycle(d)
+                    yield sleep(0.005)
+            yield sleep(2)
 
     else:
         # TODO normal loop
