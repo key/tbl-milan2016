@@ -2,11 +2,9 @@
 """
 For RaspberryPi model A
 """
-
-from time import sleep as psleep
-
 from autobahn.twisted.wamp import Application
 from autobahn.twisted.util import sleep
+
 import wiringpi
 import RPi.GPIO as GPIO
 
@@ -28,73 +26,6 @@ state = STATE_DEMO
 transition = False
 led_all = [GPIO_GROUP1, GPIO_GROUP2, GPIO_GROUP3, GPIO_GROUP4]
 
-
-def init():
-    print 'init'
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(GPIO_PWM, GPIO.OUT)
-    p = GPIO.PWM(GPIO_PWM, PWM_FREQUENCY)
-    p.start(100)
-    GPIO.output(GPIO_PWM, True)
-
-    # グループ1からグループ4まで点灯
-    for grp in led_all:
-        print 'pin %d on' % grp
-        GPIO.setup(grp, GPIO.OUT)
-        GPIO.output(grp, True)
-        psleep(0.25)
-
-    # 点滅
-    for x in range(0, 2):
-        p.ChangeDutyCycle(0)
-        psleep(0.2)
-        p.ChangeDutyCycle(100)
-        psleep(0.2)
-
-    for b in range(100, -1, -1):
-        p.ChangeDutyCycle(b)
-        psleep(0.01)
-
-    psleep(0.2)
-
-    for b in range(0, 101):
-        p.ChangeDutyCycle(b)
-        psleep(0.01)
-
-    # グループ4から1まで消灯
-    for grp in [GPIO_GROUP4, GPIO_GROUP3, GPIO_GROUP2, GPIO_GROUP1]:
-        print 'pin %d off' % grp
-        GPIO.output(grp, False)
-        psleep(0.25)
-    GPIO.output(GPIO_PWM, False)
-
-    grp1_p = GPIO.PWM(GPIO_GROUP1, PWM_FREQUENCY)
-    grp2_p = GPIO.PWM(GPIO_GROUP2, PWM_FREQUENCY)
-    grp3_p = GPIO.PWM(GPIO_GROUP3, PWM_FREQUENCY)
-    grp4_p = GPIO.PWM(GPIO_GROUP4, PWM_FREQUENCY)
-    grp1_p.start(0)
-    grp2_p.start(0)
-    grp3_p.start(0)
-    grp4_p.start(0)
-
-    for b in range(0, 101):
-        grp1_p.ChangeDutyCycle(b)
-        grp2_p.ChangeDutyCycle(b)
-        grp3_p.ChangeDutyCycle(b)
-        grp4_p.ChangeDutyCycle(b)
-        psleep(0.03)
-
-    for b in range(100, -1, -1):
-        grp1_p.ChangeDutyCycle(b)
-        grp2_p.ChangeDutyCycle(b)
-        grp3_p.ChangeDutyCycle(b)
-        grp4_p.ChangeDutyCycle(b)
-        psleep(0.03)
-
-    print 'initialize done'
-
-
 app = Application(u'cc.triplebottomline')
 
 
@@ -104,17 +35,26 @@ def onjoined(*args):
 
     global state
 
-    # setup hardware pwm using wiringpi
-    wiringpi.wiringPiSetupPhys()
-    wiringpi.pinMode(12, 2)
-    wiringpi.pwmWrite(12, 1024)
+    print 'initialize start'
 
+    # setup hardware pwm using wiringpi
+    print 'hardware pwm setup'
+    wiringpi.wiringPiSetupPhys()
+    wiringpi.pinMode(GPIO_PWM, 2)  # 2=hardware pwm
+    wiringpi.pwmWrite(GPIO_PWM, 1024)
+
+    # setup GPIO ports using RPi.GPIO
+    print 'software pwm setup'
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(GPIO_GROUP1, GPIO.OUT)
     GPIO.setup(GPIO_GROUP2, GPIO.OUT)
     GPIO.setup(GPIO_GROUP3, GPIO.OUT)
     GPIO.setup(GPIO_GROUP4, GPIO.OUT)
+    GPIO.output(GPIO_GROUP1, False)
+    GPIO.output(GPIO_GROUP2, False)
+    GPIO.output(GPIO_GROUP3, False)
+    GPIO.output(GPIO_GROUP4, False)
     grp1_p = GPIO.PWM(GPIO_GROUP1, PWM_FREQUENCY)
     grp2_p = GPIO.PWM(GPIO_GROUP2, PWM_FREQUENCY)
     grp3_p = GPIO.PWM(GPIO_GROUP3, PWM_FREQUENCY)
@@ -123,11 +63,8 @@ def onjoined(*args):
     grp2_p.start(0)
     grp3_p.start(0)
     grp4_p.start(0)
-    GPIO.output(GPIO_GROUP1, True)
-    GPIO.output(GPIO_GROUP2, True)
-    GPIO.output(GPIO_GROUP3, True)
-    GPIO.output(GPIO_GROUP4, True)
 
+    # main loop
     while True:
         if state == STATE_DEMO:
             print 'demo mode'
@@ -146,8 +83,8 @@ def onjoined(*args):
 
             for d in range(100, -1, -1):
                 v = int((1024 / 100.0) * d)
-                wiringpi.pwmWrite(12, d)
-                yield sleep(0.005)
+                wiringpi.pwmWrite(12, v)
+                yield sleep(0.05)
 
                 if state != STATE_DEMO:
                     break
@@ -201,9 +138,6 @@ def get_state():
 
 if __name__ == '__main__':
     try:
-        # init()
         app.run(u'ws://127.0.0.1:8080/ws', u'realm1')
-
     except KeyboardInterrupt:
-        # GPIO.cleanup()
-        pass
+        GPIO.cleanup()
