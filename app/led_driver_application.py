@@ -7,6 +7,7 @@ import RPi.GPIO as GPIO
 from time import sleep as psleep
 
 from autobahn.twisted.wamp import Application
+from autobahn.twisted.util import sleep
 
 
 GRP1 = 24
@@ -96,8 +97,52 @@ app = Application(u'cc.triplebottomline')
 
 @app.signal('onjoined')
 def onjoined(*args):
-    # TODO start led driver
     print 'realm joined'
+
+    global state
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(GRP1, GPIO.OUT)
+    GPIO.setup(GRP2, GPIO.OUT)
+    GPIO.setup(GRP3, GPIO.OUT)
+    GPIO.setup(GRP4, GPIO.OUT)
+    grp1_p = GPIO.PWM(GRP1, PWM_FREQUENCY)
+    grp2_p = GPIO.PWM(GRP2, PWM_FREQUENCY)
+    grp3_p = GPIO.PWM(GRP3, PWM_FREQUENCY)
+    grp4_p = GPIO.PWM(GRP4, PWM_FREQUENCY)
+    grp1_p.start(0)
+    grp2_p.start(0)
+    grp3_p.start(0)
+    grp4_p.start(0)
+    GPIO.output(GRP1, True)
+    GPIO.output(GRP2, True)
+    GPIO.output(GRP3, True)
+    GPIO.output(GRP4, True)
+    GPIO.setup(PWM, GPIO.OUT)
+
+    p = GPIO.PWM(PWM, PWM_FREQUENCY)
+    p.start(100)
+    GPIO.output(PWM, True)
+
+    if state == STATE_DEMO:
+        print 'start demo mode'
+        # グループ1からグループ4まで点灯
+        for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
+            for d in range(0, 101):
+                grp_p.ChangeDutyCycle(d)
+                yield sleep(0.03)
+	sleep(2)
+
+        for d in range(100, -1, -1):
+            for grp_p in [grp1_p, grp2_p, grp3_p, grp4_p]:
+                grp_p.ChangeDutyCycle(d)
+                yield sleep(0.005)
+        yield
+
+    else:
+        # TODO normal loop
+        pass
 
 
 @app.signal('onleaved')
@@ -140,7 +185,7 @@ def get_state():
 
 if __name__ == '__main__':
     try:
-        init()
+        # init()
         app.run(u'ws://127.0.0.1:8080/ws', u'realm1')
 
     except KeyboardInterrupt:
