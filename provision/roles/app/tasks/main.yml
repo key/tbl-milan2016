@@ -17,9 +17,32 @@
     src: templates/index.html
     dest: /home/pi/app/frontend/html/index.html
 
-- name: systemdサービスの登録
+- name: crossbarサービスの登録
   copy:
     src: files/crossbar.service
     dest: /etc/systemd/system/crossbar.service
+  become: true
+  become_method: sudo
+
+- name: crossbarサービスの有効化
+  service:
+    name: crossbar
+    enabled: true
+    state: restarted
+  become: true
+  become_method: sudo
+
+- name: LED driver applicationサービスの登録
+  copy:
+    src: files/led_driver_application.service
+    dest: /etc/systemd/system/led_application_driver.service
+  become: true
+  become_method: sudo
+
+- name: LED driver applicationサービスの有効化
+  service:
+    name: led_application_driver
+    enabled: true
+    state: restarted
   become: true
   become_method: sudo

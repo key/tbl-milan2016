@@ -1,0 +1,12 @@
+[Unit]
+Description=LED driver application
+After=crossbar
+
+[Service]
+ExecStart=/home/pi/app/scripts/led_driver_application.sh
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+

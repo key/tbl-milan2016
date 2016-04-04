@@ -1,5 +1,5 @@
 [Unit]
-Description = Crossbar.io
+Description=Crossbar.io
 
 [Service]
 ExecStart=/home/pi/app/scripts/crossbar.sh
