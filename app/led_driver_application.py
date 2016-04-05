@@ -79,6 +79,8 @@ def onjoined(*args):
     while True:
         if state == STATE_DEMO:
             print 'demo mode'
+            for grp_p in pwm_all:
+                grp_p.ChangeDutyCycle(0)
             wiringpi.pwmWrite(12, 1024)
 
             # グループ1からグループ4まで点灯
