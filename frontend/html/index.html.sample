@@ -2,6 +2,7 @@
 <html>
 <head>
     <title></title>
+	<meta content="width=320, minimum-scale=0.5" name="viewport" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="css/jquery.nstSlider.min.css"/>
     <script type="text/javascript" src="jquery-1.12.1.min.js"></script>
@@ -86,6 +87,7 @@ vertical-align:middle;
 .demo {
 display:block;
 margin:1em auto;
+padding:0.5em 2em;
 }
 </style>
 </head>
