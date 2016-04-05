@@ -34,6 +34,7 @@
                                     return;
                                 }
                                 currentValue = minValue;
+                                console.log(cause);
                                 console.log("value is " + currentValue);
 
                                 session.publish('cc.triplebottomline.led.value', [currentValue]);

@@ -1,0 +1,4 @@
+{
+  "hostname": "{{ hostname }}",
+  "group_count": {{ group_count }}
+}
