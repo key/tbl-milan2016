@@ -5,7 +5,7 @@
     - { role: python, become: true, ask_pass: true }
     - { role: app }
   vars:
-    hostname: raspberrypi.local
+    hostname: 10.0.1.201
     port: 8080
     group_count: 3
     LC_ALL: C
