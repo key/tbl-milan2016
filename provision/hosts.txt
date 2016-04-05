@@ -1,5 +1,5 @@
-[rectangle]
-raspberrypi.local
-
 [square]
-raspberrypi.local
+10.0.1.201
+
+[rectangle]
+10.0.1.202
